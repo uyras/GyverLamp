@@ -79,6 +79,7 @@ byte IP_STA[] = {192, 168, 1, 66};  // статический IP локальн�
 #include <EEPROM.h>
 #include <NTPClient.h>
 #include <GyverButton.h>
+#include <ESP8266mDNS.h>        // Include the mDNS library
 
 // ------------------- ТИПЫ --------------------
 CRGB leds[NUM_LEDS];
@@ -144,6 +145,7 @@ void setup() {
   Serial.println();
 
   // WI-FI
+  WiFi.hostname("lamp");
   if (ESP_MODE == 0) {    // режим точки доступа
     WiFi.softAPConfig(IPAddress(IP_AP[0], IP_AP[1], IP_AP[2], IP_AP[3]),
                       IPAddress(192, 168, 4, 1),
@@ -162,15 +164,26 @@ void setup() {
     wifiManager.setDebugOutput(false);
     //wifiManager.resetSettings();
 
+    
     wifiManager.autoConnect(autoConnectSSID, autoConnectPass);
-    WiFi.config(IPAddress(IP_STA[0], IP_STA[1], IP_STA[2], IP_STA[3]),
-                IPAddress(192, 168, 1, 1),
-                IPAddress(255, 255, 255, 0));
+    //WiFi.config(IPAddress(IP_STA[0], IP_STA[1], IP_STA[2], IP_STA[3]),
+    //            IPAddress(192, 168, 1, 1),
+    //            IPAddress(255, 255, 255, 0));
     Serial.print("Connected! IP address: ");
     Serial.println(WiFi.localIP());
   }
   Serial.printf("UDP server on port %d\n", localPort);
   Udp.begin(localPort);
+
+  
+  if (!MDNS.begin("lamp")) {             // Start the mDNS responder for esp8266.local
+    Serial.println("Error setting up MDNS responder!");
+  }
+  Serial.println("mDNS responder started");
+  MDNS.addService("esp", "tcp", 8080); // Announce esp tcp service on port 8080
+  int n = MDNS.queryService("esp", "tcp"); // Send out query for esp tcp services
+  //MDNS.addService("esp", "udp", 8888); // Announce esp tcp service on port 8080
+  //MDNS.queryService("esp", "udp"); // Send out query for esp tcp services
 
   // EEPROM
   EEPROM.begin(202);
