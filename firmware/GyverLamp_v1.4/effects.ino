@@ -279,6 +279,93 @@ void lightersRoutine() {
   }
 }
 
+
+
+// ----------------------------- Белый ночник ------------------------------
+
+void whiteRoutine(){
+  fillAll(CRGB(255,255,255));
+}
+
+// ----------------------------- Часы ------------------------------
+
+const byte digits[10][15] = {
+  {1,1,1,1,0,1,1,0,1,1,0,1,1,1,1}, //0
+  {0,1,0,0,1,0,0,1,0,0,1,0,0,1,0}, //1
+  {1,1,1,1,0,0,1,1,1,0,0,1,1,1,1}, //5
+  {1,1,1,0,0,1,1,1,1,0,0,1,1,1,1}, //3
+  {0,0,1,0,0,1,1,1,1,1,0,1,1,0,1}, //4
+  {1,1,1,0,0,1,1,1,1,1,0,0,1,1,1}, //5
+  {1,1,1,1,0,1,1,1,1,1,0,0,1,1,1}, //6
+  {0,0,1,0,0,1,0,0,1,0,0,1,1,1,1}, //7
+  {1,1,1,1,0,1,1,1,1,1,0,1,1,1,1}, //8
+  {1,1,1,0,0,1,1,1,1,1,0,1,1,1,1} //9
+};
+
+const unsigned short int digitWidth=3, digitHeight=5;
+unsigned short int shiftX=0, shiftY=1;
+
+void clockRoutine(){
+  const CHSV 
+    color = CHSV(modes[19].scale * 2.5, 255, 255),
+    black = CHSV(0,0,0);
+    
+  unsigned short int t;
+
+
+  unsigned short int tmpShiftX = modes[19].speed/256.*(WIDTH - digitWidth-digitWidth-1);
+  if (shiftX!=tmpShiftX){
+    shiftX=tmpShiftX;
+    fillAll(black);
+  }
+  
+  t = timeClient.getHours()/10;
+  for (byte x = 0; x < digitWidth; x++) {
+    for (byte y = 0; y < digitHeight; y++) {
+      drawPixelXY(x+shiftX, y+shiftY+digitHeight+3, (digits[t][y*digitWidth+x]==0)?black:color);
+    }
+  } 
+  t = timeClient.getHours()%10;
+  for (byte x = 0; x < digitWidth; x++) {
+    for (byte y = 0; y < digitHeight; y++) {
+      drawPixelXY(x+shiftX+digitWidth+1, y+shiftY+digitHeight+3, (digits[t][y*digitWidth+x]==0)?black:color);
+    }
+  } 
+  t = timeClient.getMinutes()/10;
+  for (byte x = 0; x < digitWidth; x++) {
+    for (byte y = 0; y < digitHeight; y++) {
+      drawPixelXY(x+shiftX, y+shiftY, (digits[t][y*digitWidth+x]==0)?black:color);
+    }
+  } 
+  t = timeClient.getMinutes()%10;
+  for (byte x = 0; x < digitWidth; x++) {
+    for (byte y = 0; y < digitHeight; y++) {
+      drawPixelXY(x+shiftX+digitWidth+1, y+shiftY, (digits[t][y*digitWidth+x]==0)?black:color);
+    }
+  } 
+
+  t = timeClient.getSeconds()%2;
+  drawPixelXY(shiftX+digitWidth-1, shiftY+digitHeight+1, (t==0)?black:color);
+  drawPixelXY(shiftX+digitWidth+1, shiftY+digitHeight+1, (t==0)?black:color);
+}
+
+// ----------------------------- Патриот ------------------------------
+
+void flagRoutine(){
+  // сдвигаем всё вниз
+  for (byte x = 0; x < WIDTH; x++) {
+    for (byte y = 0; y < HEIGHT/3; y++) {
+      drawPixelXY(x, y, CRGB(255,0,0));
+    }
+    for (byte y = HEIGHT/3; y < HEIGHT/3*2+1; y++) {
+      drawPixelXY(x, y, CRGB(0,0,255));
+    }
+    for (byte y = HEIGHT/3*2+1; y < HEIGHT; y++) {
+      drawPixelXY(x, y, CRGB(255,255,255));
+    }
+  }
+}
+
 /*
   void lightersRoutine() {
   if (loadingFlag) {

@@ -41,6 +41,12 @@ void effectsTick() {
           break;
         case 17: lightersRoutine();
           break;
+        case 18: whiteRoutine();
+          break;
+        case 19: clockRoutine();
+          break;
+        case 20: flagRoutine();
+          break;
       }
       FastLED.show();
     }
