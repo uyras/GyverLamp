@@ -56,4 +56,9 @@ void buttonTick() {
     settChanged = true;
     eepromTimer = millis();
   }
+  
+  if (touch.hasClicks() && touch.getClicks()==30) { //если 30 раз подряд нажали, значит сбросить настройки wifi
+    WiFiManager wifiManager;
+    wifiManager.resetSettings();
+  }
 }
