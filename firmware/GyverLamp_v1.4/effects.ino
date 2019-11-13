@@ -352,7 +352,6 @@ void clockRoutine(){
 // ----------------------------- Патриот ------------------------------
 
 void flagRoutine(){
-  // сдвигаем всё вниз
   for (byte x = 0; x < WIDTH; x++) {
     for (byte y = 0; y < HEIGHT/3; y++) {
       drawPixelXY(x, y, CRGB(255,0,0));
