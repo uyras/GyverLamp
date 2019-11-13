@@ -57,8 +57,30 @@ void buttonTick() {
     eepromTimer = millis();
   }
   
-  if (touch.hasClicks() && touch.getClicks()==30) { //если 30 раз подряд нажали, значит сбросить настройки wifi
-    WiFiManager wifiManager;
-    wifiManager.resetSettings();
+  if (touch.hasClicks()){
+    switch (touch.getClicks()){
+      
+       case 5: //если 5 раз нажали, установить белую подсветку, на маленькой яркости
+        Serial.println("caught 5 clicks");
+        currentMode = 18;
+        loadingFlag = true;
+        
+        FastLED.clear();
+        delay(1);
+        modes[currentMode].brightness = 10;
+        FastLED.setBrightness(modes[currentMode].brightness);
+
+        if (!dawnFlag && !ONflag) {
+          ONflag = true;
+          changePower();
+        }
+        
+        break;
+        
+      case 30: //если 30 раз подряд нажали, значит сбросить настройки wifi
+        WiFiManager wifiManager;
+        wifiManager.resetSettings();
+        break;
+    }    
   }
 }
